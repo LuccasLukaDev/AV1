@@ -14,8 +14,15 @@ export default class Peca {
         this.status = status
     }
 
-    atualizarStatus(novoStatus : StatusPeca) {
+    atualizarStatus(novoStatus : StatusPeca) : void {
         this.status = novoStatus
     }
 
+    salvar() : void {
+        console.log("Salvando...")
+    }
+
+    carregar() : void {
+        console.log("Carregando...")
+    }
 }

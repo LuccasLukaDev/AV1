@@ -14,15 +14,23 @@ export default class Etapa {
         this.funcionarios = []
     }
 
-    iniciarEtapa(){
-        this.status = StatusEtapa.ANDAMENTO
+    iniciar(){
+        if (this.status == StatusEtapa.PENDENTE) {
+            this.status = StatusEtapa.ANDAMENTO
+        }else{
+            console.log('Etapa deve estar com status PENDENTE para ser iniciada')
+        }
     }
 
-    encerrarEtapa(){
-        this.status = StatusEtapa.CONCLUIDA
+    finalizar(){
+        if (this.status == StatusEtapa.ANDAMENTO) {
+            this.status = StatusEtapa.CONCLUIDA
+        }else {
+            console.log('Etapa deve estar com status ANDAMENTO para ser iniciada')
+        }
     }
 
-    adicionarFuncionario(novoFuncionario : Funcionario){
+    associarFuncionario(novoFuncionario : Funcionario) : void{
        const funcionarioCadastrado = this.funcionarios.some(funcionario => funcionario.id === novoFuncionario.id)
 
        if (funcionarioCadastrado){
@@ -34,15 +42,17 @@ export default class Etapa {
        console.log('Funcionario Cadastrado com Sucesso !')
     }
 
-    listarFuncionariosEmEtapa() {
+    listarFuncionariosEmEtapa() : Array <Funcionario>{
 
         if (this.funcionarios.length === 0){
             console.log('Não Existe Nenhum Funcionario Cadastrado !')
-            return
+            return this.funcionarios
         }
 
         this.funcionarios.forEach(funcionario => {
             console.log(`ID: ${funcionario.id} | Nome: ${funcionario.nome} | Cargo : ${funcionario.nivelPermissao}`)
         })
+
+        return this.funcionarios
     }
 }

@@ -19,8 +19,15 @@ export default class Funcionario {
         this.nivelPermissao = nivelPermissao
     }
 
-    auth(usuarioDigitado : string, senhaDigitada : string) {
+    auth(usuarioDigitado : string, senhaDigitada : string) : boolean {
         return usuarioDigitado === this.usuario && senhaDigitada === this.senha
     }
 
+    salvar() {
+        console.log("Salvando...")
+    }
+
+    carregar() {
+        console.log("Carregando...")
+    }
 }
