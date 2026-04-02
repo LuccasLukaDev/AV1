@@ -34,7 +34,7 @@ export default class Etapa {
        const funcionarioCadastrado = this.funcionarios.some(funcionario => funcionario.id === novoFuncionario.id)
 
        if (funcionarioCadastrado){
-            console.log('Funcionario já Cadastrado !')
+            console.log('Funcionario já está na Etapa !')
             return
        }
        

@@ -1,0 +1,4 @@
+o que cada nivel de permissao pode fazer ? 
+administrador - tudo
+engrenheiro - peça, teste, etapa 
+operador - peça

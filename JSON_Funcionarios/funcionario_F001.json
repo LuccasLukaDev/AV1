@@ -1,0 +1,9 @@
+{
+  "id": "F001",
+  "nome": "admin",
+  "telefone": "(00)00000-0000",
+  "endereco": "Rua xxx Bairro xxx Numero xxx",
+  "usuario": "Admin",
+  "senha": "admin",
+  "nivelPermissao": 1
+}

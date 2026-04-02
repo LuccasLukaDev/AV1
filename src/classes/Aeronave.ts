@@ -35,7 +35,7 @@ export default class Aeronave {
         console.log(`\n----- AERONAVE ${this.codigo} -----`)
         console.log(`Código: ${this.codigo}`)
         console.log(`Modelo: ${this.modelo}`)
-        console.log(`Tipo: #${TipoAeronave[this.tipo]}`)
+        console.log(`Tipo: ${TipoAeronave[this.tipo]}`)
         console.log(`Capacidade: ${this.capacidade}`)
         console.log(`Alcance: ${this.alcance}`)
         console.log(`------------------------------`)  
@@ -73,7 +73,7 @@ export default class Aeronave {
 
         if (this.testes.length === 0) {
             console.log('Nenhum Teste Cadastrado')
-            console.log(`------------------------------\n`)   
+            console.log(`------------------------------`)   
         } else {
             this.testes.forEach((teste) => {
                 console.log(`Tipo: ${TipoTeste[teste.tipo]}\n`)
@@ -89,8 +89,9 @@ export default class Aeronave {
 
         fs.writeFileSync(caminho, JSON.stringify(this, null, 2))
 
+        console.clear()
         console.log('\nAeronave Salva com Sucesso !')
-        console.log(`------------------------------\n`) 
+        console.log(`------------------------------`)
     }
 
     carregar() : void {
@@ -99,8 +100,8 @@ export default class Aeronave {
 
         if(!fs.existsSync(caminho)) {
             console.clear()
-            console.log('\nArquivo não Encontrado !')
-            console.log(`------------------------------\n`)  
+            console.log('\nArquivo não Encontrado ! Aeronave não Existe !')
+            console.log(`------------------------------`)  
             return
         }
 
@@ -114,6 +115,7 @@ export default class Aeronave {
         this.pecas = obj.pecas
         this.etapas = obj.etapas
         this.testes = obj.testes
+        console.clear()
         console.log('\nAeronave Carregada com Sucesso !')
         console.log(`------------------------------`)  
     }
