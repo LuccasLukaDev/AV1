@@ -44,18 +44,18 @@ export default class Aeronave {
 
         if(this.pecas.length === 0){
             console.log('Nenhuma Peça Cadastrada')
-            console.log(`------------------------------\n`)   
+            console.log(`------------------------------`)   
         } else {
             this.pecas.forEach((peca) => {
                 console.log(`Nome: ${peca.nome}`)
                 console.log(`Fornecedor: ${peca.fornecedor}`)
                 console.log(`Tipo: ${TipoPeca[peca.tipo]}`)
                 console.log(`Status: ${StatusPeca[peca.status]}`)
-                console.log(`------------------------------\n`)
+                console.log(`------------------------------`)
             })
         }
 
-        console.log(`----- ETAPAS -----`)
+        console.log(`\n----- ETAPAS -----`)
 
         if (this.etapas.length === 0) {
             console.log('Nenhuma Etapa Cadastrada')
@@ -63,13 +63,13 @@ export default class Aeronave {
         } else {
             this.etapas.forEach((etapa) => {
                 console.log(`Nome: ${etapa.nome}\n`)
-                console.log(`Nome: ${etapa.prazo}\n`)
-                console.log(`Nome: ${StatusEtapa[etapa.status]}\n`)
+                console.log(`Prazo: ${etapa.prazo}\n`)
+                console.log(`Status: ${StatusEtapa[etapa.status]}\n`)
                 console.log(`------------------------------\n`)    
             })
         }
 
-        console.log(`----- TESTES -----`)
+        console.log(`\n----- TESTES -----`)
 
         if (this.testes.length === 0) {
             console.log('Nenhum Teste Cadastrado')
@@ -90,7 +90,7 @@ export default class Aeronave {
         fs.writeFileSync(caminho, JSON.stringify(this, null, 2))
 
         console.clear()
-        console.log('\nAeronave Salva com Sucesso !')
+        console.log('\nSalvo com Sucesso !')
         console.log(`------------------------------`)
     }
 
@@ -101,7 +101,7 @@ export default class Aeronave {
         if(!fs.existsSync(caminho)) {
             console.clear()
             console.log('\nArquivo não Encontrado ! Aeronave não Existe !')
-            console.log(`------------------------------`)  
+            console.log(`------------------------------`)
             return
         }
 
@@ -112,48 +112,12 @@ export default class Aeronave {
         this.tipo = obj.tipo as TipoAeronave
         this.capacidade = obj.capacidade
         this.alcance = obj.alcance
-        this.pecas = obj.pecas
+        this.pecas = obj.pecas.map((peca : any) => { return new Peca(peca.nome, peca.fornecedor, peca.tipo, peca.status) })
         this.etapas = obj.etapas
         this.testes = obj.testes
         console.clear()
         console.log('\nAeronave Carregada com Sucesso !')
         console.log(`------------------------------`)  
-    }
-
-    adicionarEtapa(novaEtapa : Etapa) {
-        const etapaExiste = this.etapas.some(etapa => etapa.nome === novaEtapa.nome)
-
-        if (etapaExiste) {
-            console.log('Etapa já Cadastrada')
-            return
-        }
-
-        this.etapas.push(novaEtapa)
-        console.log('A Etapa foi Cadastrada com Sucesso !')
-    }
-
-    adicionarPeca(novaPeca : Peca) {
-        const pecaExiste = this.pecas.some(peca => peca.nome === novaPeca.nome)
-
-        if (pecaExiste) {
-            console.log('Peça já Cadastrada !')
-            return
-        }
-
-        this.pecas.push(novaPeca)
-        console.log('A Peça foi Cadastrada com Sucesso !')
-    }
-
-    adicionarTeste(novoTeste : Teste) {
-        const testeExiste = this.testes.some(teste => teste.data === novoTeste.data)
-
-        if (testeExiste) {
-            console.log('Teste já Cadastrado')
-            return
-        }
-
-        this.testes.push(novoTeste)
-        console.log('O Teste foi Cadastrada com Sucesso !')
     }
 }
 

@@ -18,7 +18,8 @@ export default class Etapa {
         if (this.status == StatusEtapa.PENDENTE) {
             this.status = StatusEtapa.ANDAMENTO
         }else{
-            console.log('Etapa deve estar com status PENDENTE para ser iniciada')
+            console.log('\nEtapa deve estar com status PENDENTE para ser iniciada')
+            console.log(`------------------------------`)
         }
     }
 
@@ -26,7 +27,8 @@ export default class Etapa {
         if (this.status == StatusEtapa.ANDAMENTO) {
             this.status = StatusEtapa.CONCLUIDA
         }else {
-            console.log('Etapa deve estar com status ANDAMENTO para ser iniciada')
+            console.log('\nEtapa deve estar com status ANDAMENTO para ser iniciada')
+            console.log(`------------------------------`)
         }
     }
 
@@ -34,18 +36,21 @@ export default class Etapa {
        const funcionarioCadastrado = this.funcionarios.some(funcionario => funcionario.id === novoFuncionario.id)
 
        if (funcionarioCadastrado){
-            console.log('Funcionario já está na Etapa !')
+            console.log('\nFuncionario já está na Etapa !')
+            console.log(`------------------------------`)
             return
        }
        
        this.funcionarios.push(novoFuncionario)
-       console.log('Funcionario Cadastrado com Sucesso !')
+       console.log('\nFuncionario Cadastrado com Sucesso !')
+       console.log(`------------------------------`)
     }
 
     listarFuncionariosEmEtapa() : Array <Funcionario>{
 
         if (this.funcionarios.length === 0){
             console.log('Não Existe Nenhum Funcionario Cadastrado !')
+            console.log(`\n------------------------------`)
             return this.funcionarios
         }
 

@@ -4,13 +4,17 @@ import Funcionario from "./classes/Funcionario.js";
 import Peca from "./classes/Peca.js";
 import Teste from "./classes/Teste.js";
 import readline from 'readline'
-import fs, { readdir } from "fs"
+import fs from "fs"
 import { NivelPermissao } from "./enums/NivelPermissao.js";
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 })
+
+function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 async function perguntar(pergunta : string) : Promise<string> {
     return new Promise (resolve => {
@@ -49,8 +53,7 @@ async function login() : Promise<Funcionario | null> {
         const data = fs.readFileSync(pasta + arquivo, "utf-8")
         const obj = JSON.parse(data)
 
-        if (obj.usuario === usuarioDigitado && obj.senha === senhaDigitada) {
-            return new Funcionario(
+        const funcionario = new Funcionario(
                 obj.id,
                 obj.nome,
                 obj.telefone,
@@ -58,7 +61,11 @@ async function login() : Promise<Funcionario | null> {
                 obj.usuario,
                 obj.senha,
                 obj.nivelPermissao
-            )
+        )
+
+        const autenticado = funcionario.auth(usuarioDigitado, senhaDigitada)
+        if (autenticado) {
+            return funcionario
         }
     }
     console.log('\nUsuario ou Senha Invalidos !!')
@@ -70,24 +77,33 @@ async function menu() {
     let opcao = -1
     let aeronaveAtual : Aeronave | null = null
     let funcionarioAtual : Funcionario | null = null
+    let pecaAtual : Peca | null = null
 
     while (!funcionarioAtual){
         funcionarioAtual = await login()
     }
 
+    console.clear()
     console.log(`\nSeja Bem-Vindo ${funcionarioAtual.usuario} !`)
     console.log(`---------------------------------`)
 
     while (opcao != 0){
+        console.log('Carregando...')
+        await delay(3000)
+        console.clear()
         console.log('\n---------- MENU ----------')
         console.log('1 - Cadastrar Aeronave')
         console.log('2 - Carregar Aeronave')
         console.log('3 - Detalhar Aeronave')
         console.log('4 - Cadastrar Funcionario')
         console.log('5 - Carregar Funcionario')
+        console.log('6 - Cadastrar Peça')
+        console.log('7 - Carregar Peça')
+        console.log('8 - Adicionar Peça a Aeronave')
+        console.log('9 - Atualizar Status da Peça')
         console.log('0 - Sair\n')
 
-        opcao = Number(await perguntar('Escolha uma opção: '))
+        opcao = await perguntarNumero('Escolha uma opção: ', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
         switch (opcao) {
 
@@ -126,19 +142,12 @@ async function menu() {
                 break
 
             case 2:
-                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR){
-                    console.clear()
-                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
-                    console.log(`---------------------------------------------------------`)
-                    break
-                }
-
                 const codigoLoad = await perguntar('Digite o Código da Aeronave: ')
 
                 if (aeronaveAtual && aeronaveAtual.codigo === codigoLoad) {
                     console.clear()
                     console.log('\nAeronave já está Carregada !')
-                    console.log(`------------------------------\n`)  
+                    console.log(`------------------------------`)  
                     break
                 }
                 
@@ -174,7 +183,7 @@ async function menu() {
 
                 if (fs.existsSync(caminhoFun)) {
                     console.clear()
-                    console.log('\nJá existe funcionario já existe !')
+                    console.log('\nFuncionario já existe !')
                     console.log(`------------------------------\n`)
                     break
                 }
@@ -218,6 +227,91 @@ async function menu() {
                 
                 funcionarioAtual = new Funcionario(idLoad, '', '', '', '', '', 0)
                 funcionarioAtual.carregar()
+                break
+
+            case 6:
+                if (!aeronaveAtual){
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const nomePeca = await perguntar('Nome: ')
+                const caminhoPec = `./JSON_Pecas/peca_${nomePeca}.json`
+
+                if (fs.existsSync(caminhoPec)){
+                    console.clear()
+                    console.log('\nPeça ja Existe !')
+                    console.log(`------------------------------`)
+                    break
+                }
+
+                const fornecedor = await perguntar('Fornecedor: ')
+                const tipoPeca = await perguntarNumero('Tipo (0-Nacional 1-Importada): ', [0, 1])
+                const statusPeca = await perguntarNumero('Status (0-Em Produção 1-Em Transporte 2-Pronta): ', [0, 1, 2])
+
+                pecaAtual = new Peca (
+                    nomePeca,
+                    fornecedor,
+                    tipoPeca,
+                    statusPeca
+                )
+
+                pecaAtual.salvar()
+                break
+            
+            case 7:
+                const nomePec = await perguntar('Digite o Nome da Peça: ')
+
+                if (pecaAtual && pecaAtual.nome === nomePec) {
+                    console.clear()
+                    console.log('\nPeça já está Carregada !')
+                    console.log(`------------------------------`)  
+                    break
+                }
+                
+                pecaAtual = new Peca(nomePec, '', 0, 0)
+                pecaAtual.carregar()
+                break
+
+            case 8:
+                if (!aeronaveAtual){
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!pecaAtual){
+                    console.clear()
+                    console.log('\nPeça não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                aeronaveAtual.pecas.push(pecaAtual)
+                aeronaveAtual.salvar()
+                console.log(`Peça: '${pecaAtual.nome}' foi Adicionada com sucesso a Aeronave: '${aeronaveAtual.codigo}' !`)
+                break
+            
+            case 9: 
+                if (!pecaAtual){
+                    console.clear()
+                    console.log('\nPeça não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const pecaRef = pecaAtual
+
+                const novoStatus = await perguntarNumero('\nNovo Status (0-Em Produção 1-Em Transporte 2-Pronta): ', [0, 1, 2])
+                pecaAtual.status = novoStatus
+                pecaAtual.salvar()
+
+                const peca = aeronaveAtual?.pecas.find(peca => peca.nome === pecaRef.nome)
+                if (peca) peca.status = novoStatus
+                aeronaveAtual?.salvar()
                 break
 
             case 0:

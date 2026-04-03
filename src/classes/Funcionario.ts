@@ -41,7 +41,7 @@ export default class Funcionario {
         if(!fs.existsSync(caminho)) {
             console.clear()
             console.log('\nArquivo não Encontrado ! Funcionario não existe !')
-            console.log(`------------------------------`)  
+            console.log(`------------------------------`)
             return
         }
 

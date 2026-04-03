@@ -4,7 +4,20 @@
   "tipo": 1,
   "capacidade": 12000,
   "alcance": 30000,
-  "pecas": [],
+  "pecas": [
+    {
+      "nome": "P001",
+      "fornecedor": "Fornecedor 1",
+      "tipo": 1,
+      "status": 0
+    },
+    {
+      "nome": "P002",
+      "fornecedor": "Fornecedor 2",
+      "tipo": 0,
+      "status": 2
+    }
+  ],
   "etapas": [],
   "testes": []
 }
