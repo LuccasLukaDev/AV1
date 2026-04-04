@@ -751,7 +751,7 @@ async function menu() {
             default:
                 console.clear()
                 console.log('\nOpção Invalida ! Escolha um dos números das opções do menu !')
-                console.log(`-----------------------------------------------------------------`) 
+                console.log(`-----------------------------------------------------------------`) // Invencible
                 
         }
     }
