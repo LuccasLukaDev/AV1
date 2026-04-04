@@ -3,6 +3,7 @@ import Etapa from "./classes/Etapa.js";
 import Funcionario from "./classes/Funcionario.js";
 import Peca from "./classes/Peca.js";
 import Teste from "./classes/Teste.js";
+import Relatorio from "./classes/Relatorio.js"; 
 import readline from 'readline'
 import fs from "fs"
 import { NivelPermissao } from "./enums/NivelPermissao.js";
@@ -700,10 +701,47 @@ async function menu() {
                 break
 
             case 18:
-                return
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const relatorio = new Relatorio()
+
+                console.clear()
+                console.log(relatorio.gerarRelatorio(aeronaveAtual))
+
+                break
 
             case 19:
-                return
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const relatorioSalvar = new Relatorio()
+
+                relatorioSalvar.salvarEmArquivo(aeronaveAtual)
+
+                break
 
             case 0:
                 console.log('Saindo...')

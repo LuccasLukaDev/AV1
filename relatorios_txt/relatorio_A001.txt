@@ -1,0 +1,17 @@
+
+----- AERONAVE A001 -----
+Código: A001
+Modelo: Modelo 1
+Tipo: MILITAR
+Capacidade: 12000
+Alcance: 30000
+------------------------------
+
+----- PEÇAS -----
+Nenhuma Peça Cadastrada
+
+----- ETAPAS -----
+Nenhuma Etapa Cadastrada
+
+----- TESTES -----
+Nenhum Teste Cadastrado

@@ -8,62 +8,80 @@ import Etapa from "./Etapa.js"
 import Peca from "./Peca.js"
 import Teste from "./Teste.js"
 import Aeronave from "./Aeronave.js"
+import fs from "fs"
 
-class Relatorio {
+export default class Relatorio {
 
-    gerarRelatorio(aeronave : Aeronave) : void {
-        console.log(`\n----- AERONAVE ${aeronave.codigo} -----`)
-        console.log(`Código: ${aeronave.codigo}`)
-        console.log(`Modelo: ${aeronave.modelo}`)
-        console.log(`Tipo: ${TipoAeronave[aeronave.tipo]}`)
-        console.log(`Capacidade: ${aeronave.capacidade}`)
-        console.log(`Alcance: ${aeronave.alcance}`)
-        console.log(`------------------------------`)  
+    gerarRelatorio(aeronave : Aeronave) : string {
 
-        console.log(`\n----- PEÇAS -----`)
+        let relatorio = ''
+
+        relatorio += `\n----- AERONAVE ${aeronave.codigo} -----\n`
+        relatorio += `Código: ${aeronave.codigo}\n`
+        relatorio += `Modelo: ${aeronave.modelo}\n`
+        relatorio += `Tipo: ${TipoAeronave[aeronave.tipo]}\n`
+        relatorio += `Capacidade: ${aeronave.capacidade}\n`
+        relatorio += `Alcance: ${aeronave.alcance}\n`
+        relatorio += `------------------------------\n`
+
+        relatorio += `\n----- PEÇAS -----\n`
 
         if(aeronave.pecas.length === 0){
-            console.log('Nenhuma Peça Cadastrada')
-            console.log(`------------------------------`)   
+            relatorio += 'Nenhuma Peça Cadastrada\n'
         } else {
             aeronave.pecas.forEach((peca) => {
-                console.log(`Nome: ${peca.nome}`)
-                console.log(`Fornecedor: ${peca.fornecedor}`)
-                console.log(`Tipo: ${TipoPeca[peca.tipo]}`)
-                console.log(`Status: ${StatusPeca[peca.status]}`)
-                console.log(`------------------------------`)
+                relatorio += `Nome: ${peca.nome}\n`
+                relatorio += `Fornecedor: ${peca.fornecedor}\n`
+                relatorio += `Tipo: ${TipoPeca[peca.tipo]}\n`
+                relatorio += `Status: ${StatusPeca[peca.status]}\n`
+                relatorio += `------------------------------\n`
             })
         }
 
-        console.log(`\n----- ETAPAS -----`)
+        relatorio += `\n----- ETAPAS -----\n`
 
         if (aeronave.etapas.length === 0) {
-            console.log('Nenhuma Etapa Cadastrada')
-            console.log(`------------------------------`)   
+            relatorio += 'Nenhuma Etapa Cadastrada\n'
         } else {
             aeronave.etapas.forEach((etapa) => {
-                console.log(`Nome: ${etapa.nome}`)
-                console.log(`Prazo: ${etapa.prazo}`)
-                console.log(`Status: ${StatusEtapa[etapa.status]}`)
-                console.log(`------------------------------`)    
+                relatorio += `Nome: ${etapa.nome}\n`
+                relatorio += `Prazo: ${etapa.prazo}\n`
+                relatorio += `Status: ${StatusEtapa[etapa.status]}\n`
+                relatorio += `------------------------------\n`
             })
         }
 
-        console.log(`\n----- TESTES -----`)
+        relatorio += `\n----- TESTES -----\n`
 
         if (aeronave.testes.length === 0) {
-            console.log('Nenhum Teste Cadastrado')
-            console.log(`------------------------------`)   
+            relatorio += 'Nenhum Teste Cadastrado\n'
         } else {
             aeronave.testes.forEach((teste) => {
-                console.log(`Tipo: ${TipoTeste[teste.tipo]}`)
-                console.log(`Resultado: ${ResultadoTeste[teste.resultado]}`)
-                console.log(`------------------------------`)  
+                relatorio += `Tipo: ${TipoTeste[teste.tipo]}\n`
+                relatorio += `Resultado: ${ResultadoTeste[teste.resultado]}\n`
+                relatorio += `------------------------------\n`
             })
         }
+
+        return relatorio
     }
 
-    salvarEmArquivo() : void {
-        return
+    salvarEmArquivo(aeronave: Aeronave) : void {
+
+        const pasta = './relatorios_txt/'
+
+        if (!fs.existsSync(pasta)) {
+            fs.mkdirSync(pasta)
+        }
+
+        const conteudo = this.gerarRelatorio(aeronave)
+
+        const caminho = `${pasta}relatorio_${aeronave.codigo}.txt`
+
+        fs.writeFileSync(caminho, conteudo)
+
+        console.log('\nRelatório salvo com sucesso!')
+        console.log('------------------------------')
     }
+
 }
