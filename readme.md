@@ -82,6 +82,30 @@ Sistema desenvolvido em **Node.js + TypeScript** para gerenciamento completo de 
 
 ---
 
+---
+
+## 👨‍💻 Usuário Admin
+
+Usuario admin já vem cadastrado para primeiro acesso:
+
+Login: admin
+Senha: admin
+
+```
+{
+  "id": "F001",
+  "nome": "admin",
+  "telefone": "(00)00000-0000",
+  "endereco": "Rua xxx Bairro xxx Numero xxx",
+  "usuario": "admin",
+  "senha": "admin",
+  "nivelPermissao": 0
+}
+
+```
+
+---
+
 ## 💾 Persistência de Dados
 
 Os dados são armazenados em arquivos JSON organizados em pastas:
