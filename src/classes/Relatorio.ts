@@ -39,13 +39,13 @@ class Relatorio {
 
         if (aeronave.etapas.length === 0) {
             console.log('Nenhuma Etapa Cadastrada')
-            console.log(`------------------------------\n`)   
+            console.log(`------------------------------`)   
         } else {
             aeronave.etapas.forEach((etapa) => {
-                console.log(`Nome: ${etapa.nome}\n`)
-                console.log(`Prazo: ${etapa.prazo}\n`)
-                console.log(`Status: ${StatusEtapa[etapa.status]}\n`)
-                console.log(`------------------------------\n`)    
+                console.log(`Nome: ${etapa.nome}`)
+                console.log(`Prazo: ${etapa.prazo}`)
+                console.log(`Status: ${StatusEtapa[etapa.status]}`)
+                console.log(`------------------------------`)    
             })
         }
 
@@ -56,9 +56,9 @@ class Relatorio {
             console.log(`------------------------------`)   
         } else {
             aeronave.testes.forEach((teste) => {
-                console.log(`Tipo: ${TipoTeste[teste.tipo]}\n`)
-                console.log(`Resultado: ${ResultadoTeste[teste.resultado]}\n`)
-                console.log(`------------------------------\n`)  
+                console.log(`Tipo: ${TipoTeste[teste.tipo]}`)
+                console.log(`Resultado: ${ResultadoTeste[teste.resultado]}`)
+                console.log(`------------------------------`)  
             })
         }
     }

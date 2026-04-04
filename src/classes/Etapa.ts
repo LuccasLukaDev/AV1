@@ -14,7 +14,7 @@ export default class Etapa {
         this.funcionarios = []
     }
 
-    iniciar(){
+    iniciar() : void{
         if (this.status == StatusEtapa.PENDENTE) {
             this.status = StatusEtapa.ANDAMENTO
         }else{
@@ -23,11 +23,11 @@ export default class Etapa {
         }
     }
 
-    finalizar(){
+    finalizar() : void{
         if (this.status == StatusEtapa.ANDAMENTO) {
             this.status = StatusEtapa.CONCLUIDA
         }else {
-            console.log('\nEtapa deve estar com status ANDAMENTO para ser iniciada')
+            console.log('\nEtapa deve estar com status ANDAMENTO para ser finalizada')
             console.log(`------------------------------`)
         }
     }

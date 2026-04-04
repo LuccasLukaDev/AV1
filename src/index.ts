@@ -6,6 +6,7 @@ import Teste from "./classes/Teste.js";
 import readline from 'readline'
 import fs from "fs"
 import { NivelPermissao } from "./enums/NivelPermissao.js";
+import { StatusEtapa } from "./enums/StatusEtapa.js";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -64,10 +65,12 @@ async function login() : Promise<Funcionario | null> {
         )
 
         const autenticado = funcionario.auth(usuarioDigitado, senhaDigitada)
+
         if (autenticado) {
             return funcionario
         }
     }
+
     console.log('\nUsuario ou Senha Invalidos !!')
     console.log(`------------------------------`)
     return null
@@ -88,22 +91,37 @@ async function menu() {
     console.log(`---------------------------------`)
 
     while (opcao != 0){
-        console.log('Carregando...')
+        console.log('\nCarregando...')
         await delay(3000)
         console.clear()
         console.log('\n---------- MENU ----------')
+
+        console.log('\n----- AERONAVE -----')
         console.log('1 - Cadastrar Aeronave')
         console.log('2 - Carregar Aeronave')
         console.log('3 - Detalhar Aeronave')
         console.log('4 - Cadastrar Funcionario')
         console.log('5 - Carregar Funcionario')
+        console.log('----------------------')
+
+        console.log('\n----- PEÇA -----')
         console.log('6 - Cadastrar Peça')
         console.log('7 - Carregar Peça')
         console.log('8 - Adicionar Peça a Aeronave')
         console.log('9 - Atualizar Status da Peça')
+        console.log('-----------------')
+
+        console.log('\n----- ETAPA -----')
+        console.log('10 - Criar e Adicionar Etapa a Aeronave')
+        console.log('11 - Iniciar Etapa')
+        console.log('12 - Finalizar Etapa')
+        console.log('13 - Associar Funcionário à Etapa')
+        console.log('-----------------')
+
+        console.log('\n--------------------------')
         console.log('0 - Sair\n')
 
-        opcao = await perguntarNumero('Escolha uma opção: ', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        opcao = Number(await perguntar('Escolha uma opção: '))
 
         switch (opcao) {
 
@@ -314,6 +332,228 @@ async function menu() {
                 aeronaveAtual?.salvar()
                 break
 
+            case 10:
+                
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR && 
+                    funcionarioAtual.nivelPermissao !== NivelPermissao.ENGENHEIRO) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const existeEtapaNaoFinalizada = aeronaveAtual.etapas.some(etapa => etapa.status === 1)
+
+                if (existeEtapaNaoFinalizada) {
+                    console.clear()
+                    console.log('\nExiste uma Etapa não Finalizada ! Finalize-a para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const nomeEtapa = await perguntar('Nome da Etapa: ')
+                const prazo = await perguntar('Prazo da Etapa: ')
+
+                const novaEtapa = new Etapa(nomeEtapa, prazo)
+                aeronaveAtual.etapas.push(novaEtapa)
+                aeronaveAtual.salvar()
+
+                console.log(`\nEtapa: '${novaEtapa.nome}' criada e adicionada à Aeronave: ${aeronaveAtual.codigo} com sucesso!`)
+                break
+
+            case 11:
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR && 
+                    funcionarioAtual.nivelPermissao !== NivelPermissao.ENGENHEIRO) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const nomeEtap = await perguntar('Nome da Etapa: ')
+
+                const etapa = aeronaveAtual.etapas.find(etapa => etapa.nome === nomeEtap)
+
+                if (!etapa) {
+                    console.clear()
+                    console.log('\nEtapa não encontrada !')
+                    console.log('------------------------------')
+                    break
+                }
+
+                if (etapa.status === StatusEtapa.ANDAMENTO) {
+                    console.clear()
+                    console.log('\nEtapa já em Andamento !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (etapa.status === StatusEtapa.CONCLUIDA) {
+                    console.clear()
+                    console.log('\nEsta Etapa já foi Finalizada !')
+                    console.log(`-----------------------------------`)
+                    break
+                }
+
+                const existeEtapaEmAndamento = aeronaveAtual.etapas.some(etapa => etapa.status === StatusEtapa.ANDAMENTO)
+
+                if (existeEtapaEmAndamento) {
+                    console.clear()
+                    console.log('\nJá existe uma Etapa em ANDAMENTO!')
+                    console.log('-----------------------------------')
+                    break
+                }
+
+                etapa.iniciar()
+                aeronaveAtual.salvar()
+
+                console.log('\nEtapa Iniciada com Sucesso !')
+                console.log(`---------------------------------`)
+                break
+
+            case 12:
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR && 
+                    funcionarioAtual.nivelPermissao !== NivelPermissao.ENGENHEIRO) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const nomeEta = await perguntar('Nome da Etapa: ')
+
+                const etapaF = aeronaveAtual.etapas.find(etapa => etapa.nome === nomeEta)
+
+                if (!etapaF) {
+                    console.clear()
+                    console.log('\nEtapa não encontrada !')
+                    console.log('------------------------------')
+                    break
+                }
+
+                if (etapaF.status === 2) {
+                    console.clear()
+                    console.log('\nEsta Etapa já foi Finalizada !')
+                    console.log(`-----------------------------------`)
+                    break
+                }
+
+                if (etapaF.status !== 1) {
+                    console.clear()
+                    console.log('\nA Etapa precisa estar em ANDAMENTO para ser Finalizada !')
+                    console.log(`-----------------------------------`)
+                    break
+                }
+            
+                etapaF.finalizar()
+                aeronaveAtual.salvar()
+
+                console.log('\nEtapa Finalizada com Sucesso !')
+                console.log(`---------------------------------`)
+                break
+
+            case 13:
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR && 
+                    funcionarioAtual.nivelPermissao !== NivelPermissao.ENGENHEIRO) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const nomeEt = await perguntar('Nome da Etapa: ')
+                const nomeFuncionario = await perguntar('Nome do Funcionário: ')
+
+                const etap = aeronaveAtual.etapas.find(etapa => etapa.nome === nomeEt)
+
+                if (!etap) {
+                    console.clear()
+                    console.log('\nEtapa não encontrada !')
+                    console.log('------------------------------')
+                    break
+                }
+
+                if (etap.status === StatusEtapa.CONCLUIDA) {
+                    console.clear()
+                    console.log('\nNão é possível adicionar funcionários em uma etapa CONCLUÍDA!')
+                    console.log('-----------------------------------')
+                    break
+                }
+
+                const pasta = './JSON_Funcionarios/'
+                const arquivos = fs.readdirSync(pasta)
+
+                let funcionarioEncontrado: Funcionario | null = null
+
+                for (const arquivo of arquivos) {
+                    const data = fs.readFileSync(pasta + arquivo, "utf-8")
+                    const obj = JSON.parse(data)
+
+                    if (obj.nome === nomeFuncionario) {
+                        funcionarioEncontrado = new Funcionario(
+                            obj.id,
+                            obj.nome,
+                            obj.telefone,
+                            obj.endereco,
+                            obj.usuario,
+                            obj.senha,
+                            obj.nivelPermissao
+                        )
+                        break
+                    }
+                }
+
+                if (!funcionarioEncontrado) {
+                    console.clear()
+                    console.log('\nFuncionário não encontrado !')
+                    console.log('------------------------------')
+                    break
+                }
+
+                const jaExiste = etap.funcionarios.some(func => func.nome === funcionarioEncontrado!.nome)
+
+                if (jaExiste) {
+                    console.clear()
+                    console.log('\nFuncionário já está nesta Etapa!')
+                    console.log('-----------------------------------')
+                    break
+                }
+
+                etap.funcionarios.push(funcionarioEncontrado)
+                aeronaveAtual.salvar()
+
+                console.log('\nFuncionário adicionado à Etapa com sucesso!')
+                console.log('-----------------------------------')
+                break
+                
             case 0:
                 console.log('Saindo...')
                 rl.close()
