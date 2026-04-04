@@ -81,6 +81,7 @@ async function menu() {
     let aeronaveAtual : Aeronave | null = null
     let funcionarioAtual : Funcionario | null = null
     let pecaAtual : Peca | null = null
+    let testeAtual : Teste | null = null
 
     while (!funcionarioAtual){
         funcionarioAtual = await login()
@@ -100,6 +101,9 @@ async function menu() {
         console.log('1 - Cadastrar Aeronave')
         console.log('2 - Carregar Aeronave')
         console.log('3 - Detalhar Aeronave')
+        console.log('----------------------')
+
+        console.log('\n----- FUNCIONARIO -----')
         console.log('4 - Cadastrar Funcionario')
         console.log('5 - Carregar Funcionario')
         console.log('----------------------')
@@ -116,7 +120,19 @@ async function menu() {
         console.log('11 - Iniciar Etapa')
         console.log('12 - Finalizar Etapa')
         console.log('13 - Associar Funcionário à Etapa')
+        console.log('14 - Listar Funcionarios em Etapa')
         console.log('-----------------')
+
+        console.log('\n----- TESTE -----')
+        console.log('15 - Cadastrar Teste')
+        console.log('16 - Carregar Teste')
+        console.log('17 - Adicionar Teste a Aeronave')
+        console.log('-----------------')
+
+        console.log('\n----- RELATORIO -----')
+        console.log('18 - Gerar Relatorio')
+        console.log('19 - Salvar Relatorio em Arquivo .txt')
+        console.log('-----------------------')
 
         console.log('\n--------------------------')
         console.log('0 - Sair\n')
@@ -388,11 +404,25 @@ async function menu() {
 
                 const etapa = aeronaveAtual.etapas.find(etapa => etapa.nome === nomeEtap)
 
+
                 if (!etapa) {
                     console.clear()
                     console.log('\nEtapa não encontrada !')
                     console.log('------------------------------')
                     break
+                }
+
+                const indice = aeronaveAtual.etapas.indexOf(etapa)
+
+                if (indice > 0) {
+                    const etapaAnterior = aeronaveAtual.etapas[indice - 1]
+
+                    if (etapaAnterior.status !== StatusEtapa.CONCLUIDA) {
+                        console.clear()
+                        console.log('\nFinalize a etapa anterior antes de iniciar esta!')
+                        console.log('-----------------------------------')
+                        break
+                    }
                 }
 
                 if (etapa.status === StatusEtapa.ANDAMENTO) {
@@ -408,6 +438,7 @@ async function menu() {
                     console.log(`-----------------------------------`)
                     break
                 }
+                
 
                 const existeEtapaEmAndamento = aeronaveAtual.etapas.some(etapa => etapa.status === StatusEtapa.ANDAMENTO)
 
@@ -553,7 +584,127 @@ async function menu() {
                 console.log('\nFuncionário adicionado à Etapa com sucesso!')
                 console.log('-----------------------------------')
                 break
+            
+            case 14:
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR && 
+                    funcionarioAtual.nivelPermissao !== NivelPermissao.ENGENHEIRO) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const nomeEtapaBusca = await perguntar('Nome da Etapa: ')
+
+                const etapaBusca = aeronaveAtual.etapas.find(etapa => etapa.nome === nomeEtapaBusca)
+
+                if (!etapaBusca) {
+                    console.clear()
+                    console.log('\nEtapa não encontrada !')
+                    console.log('------------------------------')
+                    break
+                }
+
+                console.clear()
+                console.log(`\n----- FUNCIONÁRIOS DA ETAPA: ${etapaBusca.nome} -----`)
+
+                etapaBusca.listarFuncionariosEmEtapa()
+
+                break
+            
+            case 15:
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR && 
+                    funcionarioAtual.nivelPermissao !== NivelPermissao.ENGENHEIRO) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                const idTeste = await perguntar('Identificador do Teste: ')
+                const caminhoTeste = `./JSON_Testes/teste_${idTeste}.json`
+
+                if (fs.existsSync(caminhoTeste)){
+                    console.clear()
+                    console.log('\nJá existe um Teste com este ID !')
+                    console.log(`------------------------------\n`)
+                    break
+                }
                 
+                const tipoTeste = await perguntarNumero('Resultado (0-Elétrico 1-Hídraulico 2-Aerodinamico): ', [0, 1, 2])
+                const resultadoTeste = await perguntarNumero('Resultado (0-Reprovado 1-Aprovado): ', [0, 1])
+
+                testeAtual = new Teste(
+                    tipoTeste,
+                    resultadoTeste,
+                    idTeste
+                )
+
+                testeAtual.salvar()
+                break
+
+            case 16:
+                const testeId = await perguntar('Digite o Identificador do Teste: ')
+
+                if (testeAtual && testeAtual.idTeste === testeId) {
+                    console.clear()
+                    console.log('\nTeste já está Carregado !')
+                    console.log(`------------------------------`)  
+                    break
+                }
+                
+                testeAtual = new Teste(0, 0, testeId)
+                testeAtual.carregar()
+                break
+
+            case 17:
+                if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR && 
+                    funcionarioAtual.nivelPermissao !== NivelPermissao.ENGENHEIRO) {
+                    console.clear()
+                    console.log('\nVocê não tem permissão para acessar está funcionalidade !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!aeronaveAtual) {
+                    console.clear()
+                    console.log('\nAeronave não identificada ! Cadastre ou Carregue uma para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                if (!testeAtual){
+                    console.clear()
+                    console.log('\nTeste não identificado ! Cadastre ou Carregue um para Continuar !')
+                    console.log(`---------------------------------------------------------`)
+                    break
+                }
+
+                aeronaveAtual.testes.push(testeAtual)
+                aeronaveAtual.salvar()
+                console.log(`Teste: '${testeAtual.idTeste}' foi Adicionada com sucesso a Aeronave: '${aeronaveAtual.codigo}' !`)
+                break
+
+            case 18:
+                return
+
+            case 19:
+                return
+
             case 0:
                 console.log('Saindo...')
                 rl.close()

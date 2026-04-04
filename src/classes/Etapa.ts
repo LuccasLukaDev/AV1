@@ -1,3 +1,4 @@
+import { NivelPermissao } from "../enums/NivelPermissao.js"
 import { StatusEtapa } from "../enums/StatusEtapa.js"
 import Funcionario from "./Funcionario.js"
 
@@ -55,7 +56,7 @@ export default class Etapa {
         }
 
         this.funcionarios.forEach(funcionario => {
-            console.log(`ID: ${funcionario.id} | Nome: ${funcionario.nome} | Cargo : ${funcionario.nivelPermissao}`)
+            console.log(`ID: ${funcionario.id} | Nome: ${funcionario.nome} | Cargo : ${NivelPermissao[funcionario.nivelPermissao]}`)
         })
 
         return this.funcionarios

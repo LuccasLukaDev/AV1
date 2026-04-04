@@ -115,7 +115,9 @@ export default class Aeronave {
         this.alcance = obj.alcance
         this.pecas = obj.pecas.map((peca : any) => { return new Peca(peca.nome, peca.fornecedor, peca.tipo, peca.status) })
         this.etapas = obj.etapas.map( (etapa : any) => { 
+            
             const novaEtapa = new Etapa(etapa.nome, etapa.prazo)
+
             novaEtapa.funcionarios = (etapa.funcionarios || []).map((funcionario : any) => {
                 return new Funcionario(
                     funcionario.id,
@@ -129,7 +131,7 @@ export default class Aeronave {
             })
             return novaEtapa
         })
-        this.testes = obj.testes
+        this.testes = obj.testes.map((teste : any) => { return new Teste(teste.tipo, teste.resultado, teste.idTeste) })
         console.clear()
         console.log('\nAeronave Carregada com Sucesso !')
         console.log(`------------------------------`)  
