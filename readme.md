@@ -115,7 +115,7 @@ npm install
 ### 2. Compilar o projeto
 
 ```bash
-npm run dev
+npm run buikd
 ```
 
 ### 3. Executar
