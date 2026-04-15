@@ -6,6 +6,7 @@ import Teste from "./classes/Teste.js";
 import Relatorio from "./classes/Relatorio.js"; 
 import readline from 'readline'
 import fs from "fs"
+import path from "path"
 import { NivelPermissao } from "./enums/NivelPermissao.js";
 import { StatusEtapa } from "./enums/StatusEtapa.js";
 
@@ -206,6 +207,7 @@ async function menu() {
                 break
 
             case 4:
+
                 if (funcionarioAtual.nivelPermissao !== NivelPermissao.ADMINISTRADOR){
                     console.clear()
                     console.log('\nVocê não tem permissão para acessar está funcionalidade !')
@@ -225,12 +227,13 @@ async function menu() {
 
                 const nome = await perguntar('Nome: ')
                 const usuario = await perguntar('Nome de Usuario: ')
+                
                 const senha = await perguntar('Senha: ')
                 const telefone = await perguntar('Telefone: ')
                 const endereco = await perguntar('Endereco: ')
                 const nivelPermissao = await perguntarNumero('Nivel de Permissao (0-Administrador 1-Engenharia 2-Operador): ', [0, 1, 2])
 
-                funcionarioAtual = new Funcionario(
+                const novoFuncionario = new Funcionario(
                     id,
                     nome,
                     telefone,
@@ -240,7 +243,29 @@ async function menu() {
                     nivelPermissao
                 )
 
-                funcionarioAtual.salvar()
+                const dir = './JSON_Funcionarios'
+                const files = fs.readdirSync(dir)
+
+                let usuarioExiste = false
+
+                for (const file of files) {
+                    const caminho = path.join(dir, file)
+                    const dados = JSON.parse(fs.readFileSync(caminho, 'utf-8'))
+
+                    if (dados.usuario === usuario) {
+                        usuarioExiste = true
+                        break
+                    }
+                }
+
+                if (usuarioExiste) {
+                    console.clear()
+                    console.log('\nNome de usuário já existe!')
+                    console.log('------------------------------\n')
+                    break
+                }
+
+                novoFuncionario.salvar()
                 break
             
             case 5:
